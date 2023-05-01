@@ -4,6 +4,11 @@ from typing import Callable
 
 # Activation Functions
 
+def no_function(x):
+    return x
+
+def no_function_prime(x):
+    return 1
 
 def relu(x: np.ndarray) -> np.ndarray:
     x = np.clip(x, -30, 30)
@@ -57,8 +62,8 @@ def error_prime(estimated_y: np.ndarray,
 # Regularizations
 
 
-def _regularizer_l1(self, loss: Callable[[any, any]],
-                    l1_term: float) -> Callable[[any, any, list[np.ndarray]]]:
+def _regularizer_l1(loss: Callable[[any, any], any],
+                    l1_term: float)  -> Callable[[any, any], list[np.ndarray]]:
     def regularized_loss(estimated_y, y, weights_list: list[np.ndarray]):
         cost = loss(estimated_y, y) + (l1_term/2) * \
             np.sum([np.sum(i**2) for i in weights_list])
@@ -66,8 +71,8 @@ def _regularizer_l1(self, loss: Callable[[any, any]],
     return regularized_loss
 
 
-def _regularizer_l1_prime(self, loss_prime: Callable[[any, any]],
-                          l1_term: float) -> Callable[[any, any, list[np.ndarray]]]:
+def _regularizer_l1_prime(loss_prime: Callable[[any, any], any],
+                          l1_term: float) -> Callable[[any, any], list[np.ndarray]]:
     def regularized_loss(estimated_y, y, weights_list: list[np.ndarray]):
         cost = loss_prime(estimated_y, y) + l1_term * \
             np.sum([np.sum(i) for i in weights_list])

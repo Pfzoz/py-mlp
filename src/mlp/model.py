@@ -44,7 +44,7 @@ class Model:
                        y: np.ndarray,
                        learning_rate: float) -> None:
         delta = self.loss_prime(self.activations[-1], y, np.array(
-            self.weight_matrixes), 0.000001) * self.activation_primes[-1][0][0](self.activations[-1])
+            self.weight_matrixes)) * self.activation_primes[-1][0][0](self.activations[-1])
         for i in range(len(self.weight_matrixes)-1, -1, -1):
             self.bias_matrixes[i] -= learning_rate*delta
             # 1
