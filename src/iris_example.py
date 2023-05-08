@@ -2,8 +2,8 @@ import pandas as pd
 import numpy as np
 from mlp.model import MLP
 from mlp.structures import Layer
-from mlp.calculations import sigmoid, sigmoid_prime, relu, relu_prime, error, error_prime
-from mlp.calculations import mean_squared_error as mse, mean_squared_error_prime as msep
+from mlp.calculations.afuncs import sigmoid, sigmoid_prime
+from mlp.calculations.losses import mean_squared_error as mse, mean_squared_error_prime as msep
 
 def train_test_split(x_data : list, y_data, x_ratio : float) -> tuple[list, list, list, list]:
     indexes = list(range(len(x_data)))
@@ -49,12 +49,12 @@ if __name__ == "__main__":
     x, y, test_x, test_y = train_test_split(x, y, 0.75)
     print(test_x)
     #
-    mlp = MLP(mse, msep, 0.000001)
-    mlp.add_layer(Layer(4, sigmoid, sigmoid_prime))
-    mlp.add_layer(Layer(4, sigmoid, sigmoid_prime))
-    mlp.add_layer(Layer(1, sigmoid, sigmoid_prime))
+    mlp = MLP(mse, msep, 0)
+    mlp.push_layer(Layer(4, sigmoid, sigmoid_prime))
+    mlp.push_layer(Layer(4, sigmoid, sigmoid_prime))
+    mlp.push_layer(Layer(1, sigmoid, sigmoid_prime))
     model = mlp.compile()
-    model.fit(x, y, epochs=20, learning_rate=0.00001)
+    model.fit(x, y, epochs=100, learning_rate=0.1)
     for x, y in zip(test_x, test_y):
         model.feed_foward(x)
         print("true:", y)
