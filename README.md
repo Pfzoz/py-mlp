@@ -1,13 +1,13 @@
-# py-mlp
-A MLP implementation that utilizes very high-level concepts, such as dependency injection, encapsulation, modules, oop in general and other paradigms.
+# Py-MLP
 
-## Features
-It includes the usual architecture of any Multi-Layered Perceptrons model: feed foward algorithm, back propagation joined with stochastic gradient descent. Activation and Loss Functions, and lastly, implementations of regularizing techniques to avoid the vanishing/exploding gradient problem.
+## Main Code Description
 
-### NOT-Gate
+This code is based mainly on the ideas of Object-Oriented-Programming (OOP), and naturally tries to lead to a more abstract code structure. It utilizes concepts such as encapsulation and dependency injection to facilitate readability.
 
-The not_example.py file contains an example of an architecture designed to be trained after a NOT Gate logic.
+The *model* module is an attempt to not create trade-offs between readability and performance. As simple as it gets, it offers diffent classes to represent the same object, for the exception that the Model class is actually functional and structured in a performance-guided way (using numpy and slightly denser functionalities). The MLP model instantiates a functional Model object.
 
-### Iris Dataset
+## Hierarchy and Architecture
 
-The iris_example.py file contains the classical dataset utilized by many; it makes use of other usual techniques such as normalization and data encoding.
+The hierarchy of this project's architecture can be visualized as follows:
+
+![calculations.py->structures.py->model.py<-calculations.py](assets/py-mlp.drawio.png)
