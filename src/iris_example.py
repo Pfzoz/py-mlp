@@ -2,40 +2,7 @@ import pandas as pd
 import numpy as np
 from mlp.model import MLP
 from mlp.structures import Layer
-from mlp.calculations.afuncs import sigmoid, sigmoid_prime
-from mlp.calculations.losses import mean_squared_error as mse, mean_squared_error_prime as msep
-
-def train_test_split(x_data : list, y_data, x_ratio : float) -> tuple[list, list, list, list]:
-    indexes = list(range(len(x_data)))
-    
-    x_indexes = list(np.random.choice(indexes, len(x_data)))
-    train_x = []
-    train_y = []
-    remove_list = []
-    for i in range(int(len(x_data)*x_ratio)):
-        train_x.append(x_data[x_indexes[i]])
-        train_y.append(y_data[x_indexes[i]])
-        remove_list.append(x_indexes[i])
-    [x_indexes.remove(i) for i in remove_list]
-    test_x = []
-    test_y = []
-    for i in x_indexes:
-        test_x.append(x_data[i])
-        test_y.append(y_data[i])
-    return train_x, train_y, test_x, test_y
-
-def encode(data : list) -> list:
-    encoder = {}
-    for x in data:
-        if type(x) == str and not x in encoder.keys():
-            encoder[x] = len(encoder.keys())
-    return_data = [encoder[x] for x in data]
-    return return_data
-
-def normalize(data : np.ndarray) -> np.ndarray:
-    min_value, max_value = (np.amin(data), np.amax(data))
-    normalized_data = (data-min_value)/(max_value-min_value)
-    return normalized_data
+from mlp.utils.treats import train_test_split, encode, normalize
 
 if __name__ == "__main__":
     iris_set = pd.read_csv("/home/pedrozoz/repositories/py-repo/py-mlp/assets/iris.data", sep=',')
@@ -47,17 +14,14 @@ if __name__ == "__main__":
     y = normalize(np.array(encode([i[-1] for i in data])))
     y = [np.array([[i]]) for i in y]
     x, y, test_x, test_y = train_test_split(x, y, 0.75)
-    print(test_x)
     #
-    mlp = MLP(mse, msep, 0)
-    mlp.push_layer(Layer(4, sigmoid, sigmoid_prime))
-    mlp.push_layer(Layer(4, sigmoid, sigmoid_prime))
-    mlp.push_layer(Layer(1, sigmoid, sigmoid_prime))
+    mlp = MLP("mse")
+    mlp.push_layer(Layer(4, "sigmoid"))
+    mlp.push_layer(Layer(4, "sigmoid"))
+    mlp.push_layer(Layer(1, "sigmoid"))
     model = mlp.compile()
     model.fit(x, y, epochs=100, learning_rate=0.1)
     for x, y in zip(test_x, test_y):
         model.feed_foward(x)
         print("true:", y)
         print("pred:", model.activations[-1][0])
-
-#Setosa=0 Versicolor=0.5 Virginica=1

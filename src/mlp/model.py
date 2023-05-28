@@ -2,7 +2,17 @@ import numpy as np
 from typing import Callable
 from .structures import Layer
 from .calculations.regularization import L2, L2_prime
+from .calculations.afuncs import *
+from .calculations.losses import *
 
+AFUNCS_DICT = {
+    "sigmoid": [sigmoid, sigmoid_prime],
+}
+
+LOSSES_DICT = {
+    "mse": [mean_squared_error, mean_squared_error_prime],
+    "mean-squared-error": [mean_squared_error, mean_squared_error_prime]
+}
 
 class Model:
     def __init__(self, loss: Callable, loss_prime: Callable) -> None:
@@ -73,13 +83,17 @@ class Model:
 class MLP:
     def __init__(
         self,
-        loss: Callable[[np.ndarray, np.ndarray], float],
-        loss_prime: Callable[[np.ndarray, np.ndarray], np.ndarray],
-        regularization: float,
+        loss: Callable[[np.ndarray, np.ndarray], float] | str,
+        loss_prime: Callable[[np.ndarray, np.ndarray], np.ndarray] | str = None,
+        regularization: float = 0.0,
     ) -> None:
         self.layers = []
-        self.loss = loss
-        self.loss_prime = loss_prime
+        if not (type(loss) is str):
+            self.loss = loss
+            self.loss_prime = loss_prime
+        else:
+            self.loss = LOSSES_DICT[loss][0]
+            self.loss_prime = LOSSES_DICT[loss][1]
         self.regularization = regularization
 
     # def compile(self) -> Model:
