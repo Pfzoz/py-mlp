@@ -3,6 +3,7 @@ import numpy as np
 from mlp.model import MLP
 from mlp.structures import Layer
 from mlp.utils.treats import train_test_split, encode, normalize
+from mlp.backup import save_model, load_model
 
 if __name__ == "__main__":
     iris_set = pd.read_csv("/home/pedrozoz/repositories/py-repo/py-mlp/assets/iris.data", sep=',')
@@ -25,3 +26,9 @@ if __name__ == "__main__":
         model.feed_foward(x)
         print("true:", y)
         print("pred:", model.activations[-1][0])
+    save_model(model, "iris_model.json")
+    loaded_model = load_model("iris_model.json")
+    for x, y in zip(test_x, test_y):
+        loaded_model.feed_foward(x)
+        print("true:", y)
+        print("pred:", loaded_model.activations[-1][0])

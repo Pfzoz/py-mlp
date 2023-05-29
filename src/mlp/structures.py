@@ -2,8 +2,16 @@ import numpy as np
 from typing import Callable
 from .calculations.afuncs import *
 
+def none(x):
+    return x
+
+def none_prime(x):
+    return 1
+
 AFUNCS_DICT = {
     "sigmoid": [sigmoid, sigmoid_prime],
+    "None": [none, none_prime],
+    "none": [none, none_prime]
 }
 
 class Layer:
