@@ -7,6 +7,13 @@ REVERSE_DICT = {
 }
 
 def save_model(model : Model | MLP, path : str = "", save_compilation : bool = True) -> dict:
+    """ Salva o modelo, compilado ou não.
+
+        Args:
+            model -> Modelo a ser salvo.
+            path -> Caminho do .json.
+            save_compilation -> flag opcional para desativar a salvação dos parâmetros.
+    """
     result = {
         "architecture": {
             "layers": [],
@@ -52,6 +59,11 @@ def save_model(model : Model | MLP, path : str = "", save_compilation : bool = T
         dump(result, json_file, indent=4)
 
 def load_model(path : str) -> Model | MLP:
+    """ Carrega o modelo, compilado ou não.
+
+        Args:
+            path -> Arquivo .json a ser carregado.
+    """
     model_json = ""
     with open(path) as json_file:
         model_json = load(json_file)

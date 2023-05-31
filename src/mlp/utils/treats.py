@@ -1,6 +1,10 @@
 import numpy as np
 
 def train_test_split(x_data : list, y_data, x_ratio : float) -> tuple[list, list, list, list]:
+    """
+        Função para separar uma lista de matrizes de entradas e saídas em dados de treino e teste.
+        Aleatório.
+    """
     indexes = list(range(len(x_data)))
     
     x_indexes = list(np.random.choice(indexes, len(x_data)))

@@ -24,6 +24,12 @@ LOSSES_DICT = {
 
 
 class Model:
+    """
+        Modelo funcional de uma MLP. Não há abstrações, todos os valores são mantidos em matrizes
+        e calculados algebricamente.
+
+        Recomenda-se obter uma instância de Model a partir da classe MLP.
+    """
     def __init__(self, loss: Callable, loss_prime: Callable, learning_rate = 0.1, epochs = 100) -> None:
         self.learning_rate = learning_rate
         self.epochs = epochs
@@ -48,6 +54,14 @@ class Model:
         return return_str
 
     def feed_foward(self, x: np.ndarray) -> None:
+        """
+            Alimenta a rede com uma entrada correspondente ao formato da primeira camada (input layer).
+            Importante: como as ativações são representadas em matrizes de uma só coluna. É necessário
+            usar uma matriz de uma coluna no argumento 'x'.
+
+            Args:
+                x -> Matriz correspodente aos valores a serem alimentados à rede.
+        """
         self.activations[0] = x
         self.zs = []
         self.zs.append(x)
@@ -61,6 +75,15 @@ class Model:
             self.zs.append(z)
 
     def back_propagate(self, y: np.ndarray, learning_rate: float) -> None:
+        """
+            Retro-propaga um valor com base em uma matriz de valores "verdadeiros" 'y'.
+            Importante: como as ativações são representadas em matrizes de uma só coluna. É necessário
+            usar uma matriz de uma coluna no argumento 'y'.
+
+            Args:
+                y -> Matriz de valores correspondentes a camada final da rede.
+                learning_rate -> Taxa de aprendizado utilizado para alterar os pesos e vieses.
+        """
         delta = self.loss_prime(
             self.activations[-1], y, self.weight_matrixes[-1]
         ) * self.activation_primes[-1](self.activations[-1])
@@ -81,6 +104,17 @@ class Model:
         epochs: int = None,
         learning_rate: float = None,
     ) -> None:
+        """
+            Otimiza a rede com base no gradiente descendente stocástico. Para isso utiliza listas de 
+            matrizes de valores de entradas 'x' e valores verdadeiros 'y', por determinadas 'épocas'.
+
+            Args:
+                x -> lista de matrizes de entrada da rede.
+                y -> lista de matrizes 'verdadeiras' de saída da rede.
+                epochs -> 'épocas', quantidades de ciclos de retro-propagação da rede.
+                learning_rate -> Taxa de aprendizado a ser utilizada na retro-propagação e alteração dos
+                    parâmetros da rede.
+        """
         self.epochs = epochs if epochs else self.epochs
         self.learning_rate = learning_rate if learning_rate else self.learning_rate
         for epoch in range(self.epochs):
@@ -94,8 +128,18 @@ class Model:
                 f"EPOCH {epoch} - MSE:", main_error / len(y), f"({main_error}/{len(y)})"
             )
 
-
 class MLP:
+    """
+        Classe "casca" para criação de uma MLP. É uma abstração para ser convertida na classe
+        funcional final 'Model'
+
+        Args:
+            loss -> Função de custo, pode ser uma função ou string reconhecível em 'LOSSES_DICT'
+            loss_prime -> Função derivada da função de custo, não necessária se uma string reconhecível foi
+                passada em 'loss'.
+            regularization -> Fator da regularização, por default é usado a L2 e o único jeito de "desativa-la"
+                é utilizar um valor nulo (0).
+    """
     def __init__(
         self,
         loss: Callable[[np.ndarray, np.ndarray], float] | str,
@@ -114,6 +158,9 @@ class MLP:
     # def compile(self) -> Model:
 
     def compile(self) -> Model:
+        """
+            Compila a abstração (as 'Layers') para um modelo funcional (classe 'Model')
+        """
         model = Model(
             L2(self.loss, self.regularization),
             L2_prime(self.loss_prime, self.regularization),
@@ -132,4 +179,10 @@ class MLP:
         return model
 
     def push_layer(self, layer: Layer) -> None:
+        """
+            Adiciona uma nova camada a lista de camadas.
+
+            Args:
+                layer -> Objeto do tipo 'Layer'.
+        """
         self.layers.append(layer)
