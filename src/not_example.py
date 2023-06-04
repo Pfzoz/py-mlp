@@ -11,10 +11,10 @@ if __name__ == "__main__":
     mlp.push_layer(Layer(2, sigmoid, sigmoid_prime))
     mlp.push_layer(Layer(3, sigmoid, sigmoid_prime))
     mlp.push_layer(Layer(2, sigmoid, sigmoid_prime))
-    model = mlp.compile()
+    model = mlp.compile("L2")
     print(model)
-    x = [np.array([[0], [0]]), np.array([[1], [0]]), np.array([[0], [1]]), np.array([[1], [1]])]
-    y = [np.array([[1], [1]]), np.array([[0], [1]]), np.array([[1], [0]]), np.array([[0], [0]])]
+    x = [np.array([0,0]),np.array([1,0]), np.array([0,1]), np.array([1,1])]
+    y = [np.array([1,1]),np.array([0,1]), np.array([1,0]), np.array([0,0])]
     model.fit(x, y, epochs=200, learning_rate=1)
     model.feed_foward(np.array([[0], [0]]))
     print(model.activations[-1][:, 0])

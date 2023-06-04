@@ -1,27 +1,22 @@
 from .model import *
 from json import dump, load
 
-REVERSE_DICT = {
-    sigmoid : "sigmoid",
-    mean_squared_error : "mse",
-}
 
-def save_model(model : Model | MLP, path : str = "", save_compilation : bool = True) -> dict:
-    """ Salva o modelo, compilado ou não.
+def save_model(
+    model: Model | MLP, path: str = "", save_compilation: bool = True
+) -> dict:
+    """Salva o modelo, compilado ou não.
 
-        Args:
-            model -> Modelo a ser salvo.
-            path -> Caminho do .json.
-            save_compilation -> flag opcional para desativar a salvação dos parâmetros.
+    Args:
+        model -> Modelo a ser salvo.
+        path -> Caminho do .json.
+        save_compilation -> flag opcional para desativar a salvação dos parâmetros.
     """
     result = {
         "architecture": {
             "layers": [],
             "loss": str,
-            "regularization": {
-                "factor": float,
-                "type": str
-            },
+            "regularization": {"factor": float, "type": str},
         },
         "details": {
             "model": 0,
@@ -29,7 +24,7 @@ def save_model(model : Model | MLP, path : str = "", save_compilation : bool = T
             "biases": [],
             "lr": float,
             "epochs": int,
-        }
+        },
     }
     for i, layer in enumerate(model.activations):
         if i == 0:
@@ -40,13 +35,16 @@ def save_model(model : Model | MLP, path : str = "", save_compilation : bool = T
         else:
             layer_dict = {
                 "n": layer.shape[0],
-                "af": REVERSE_DICT[model.activation_functions[i-1]],
+                "af": model.activation_functions[i - 1].__name__,
             }
         result["architecture"]["layers"].append(layer_dict)
-    print("RESULT:", result)
-    result["architecture"]["loss"] = REVERSE_DICT[model.base_loss]
-    result["architecture"]["regularization"]["type"] = "None"
-    result["architecture"]["regularization"]["factor"] = 0.0
+    result["architecture"]["loss"] = model.compile_log["base_loss"]
+    result["architecture"]["regularization"]["type"] = model.compile_log[
+        "regularization"
+    ]
+    result["architecture"]["regularization"]["factor"] = model.compile_log[
+        "regularization_factor"
+    ]
     if type(model) is Model and save_compilation:
         result["details"]["model"] = 1
         for weights in model.weight_matrixes:
@@ -58,22 +56,28 @@ def save_model(model : Model | MLP, path : str = "", save_compilation : bool = T
     with open(path, "w+") as json_file:
         dump(result, json_file, indent=4)
 
-def load_model(path : str) -> Model | MLP:
-    """ Carrega o modelo, compilado ou não.
 
-        Args:
-            path -> Arquivo .json a ser carregado.
+def load_model(path: str) -> Model | MLP:
+    """Carrega o modelo, compilado ou não.
+
+    Args:
+        path -> Arquivo .json a ser carregado.
     """
     model_json = ""
     with open(path) as json_file:
         model_json = load(json_file)
     print(model_json)
-    new_mlp = MLP(model_json["architecture"]["loss"],
-                  regularization=float(model_json["architecture"]["regularization"]["factor"]))
+    new_mlp = MLP(
+        model_json["architecture"]["loss"],
+        regularization=float(model_json["architecture"]["regularization"]["factor"]),
+    )
     for layer in model_json["architecture"]["layers"]:
         new_mlp.push_layer(Layer(layer["n"], layer["af"]))
     if model_json["details"]["model"]:
-        result = new_mlp.compile()
+        result = new_mlp.compile(
+            model_json["regularization"]["type"],
+            regularization_factor=model_json["regularization"]["factor"],
+        )
         load_weights = model_json["details"]["weights"]
         load_biases = model_json["details"]["biases"]
         for i in range(len(load_weights)):
@@ -87,4 +91,3 @@ def load_model(path : str) -> Model | MLP:
         return result
     else:
         return new_mlp
-    

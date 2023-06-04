@@ -2,6 +2,14 @@ import numpy as np
 from math import e as E
 
 
+def none(x):
+    return x
+
+
+def none_prime(x):
+    return 1
+
+
 def no_function(x: np.ndarray) -> np.ndarray:
     return x
 
@@ -34,3 +42,10 @@ def sigmoid(x: np.ndarray) -> np.ndarray:
 def sigmoid_prime(x: np.ndarray) -> np.ndarray:
     x = np.clip(x, -30, 30)
     return x * (1 - x)
+
+
+AFUNCS_DICT = {
+    "sigmoid": [sigmoid, sigmoid_prime],
+    "None": [none, none_prime],
+    "none": [none, none_prime],
+}

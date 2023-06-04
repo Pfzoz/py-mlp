@@ -3,7 +3,7 @@ import numpy as np
 from mlp.model import MLP
 from mlp.structures import Layer
 from mlp.utils.treats import train_test_split, encode, normalize
-from mlp.backup import save_model, load_model
+from mlp.backup import save_model
 
 if __name__ == "__main__":
     # Leitura de Dados
@@ -22,18 +22,18 @@ if __name__ == "__main__":
     mlp.push_layer(Layer(4, "sigmoid"))
     mlp.push_layer(Layer(4, "sigmoid"))
     mlp.push_layer(Layer(1, "sigmoid"))
-    model = mlp.compile()
+    model = mlp.compile("L2", epochs=100, learning_rate=0.1)
     # Treinamento
-    model.fit(x, y, epochs=100, learning_rate=0.1)
+    model.fit(x, y)
     # Validação
     for x, y in zip(test_x, test_y):
         model.feed_foward(x)
         print("true:", y)
         print("pred:", model.activations[-1][0])
-    #
-    ## -- EXEMPLO DE ARQUIVOS DE MODELOS '.json' SALVOS E CARREGADOS --
-    #
-    # save_model(model, "iris_model.json")
+    
+    # -- EXEMPLO DE ARQUIVOS DE MODELOS '.json' SALVOS E CARREGADOS --
+    
+    save_model(model, "iris_model.json")
     # loaded_model = load_model("iris_model.json")
     # for x, y in zip(test_x, test_y):
     #     loaded_model.feed_foward(x)
